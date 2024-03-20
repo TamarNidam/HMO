@@ -1,22 +1,16 @@
-﻿@model HMO.Models.Member
+﻿@model HMO.DTO.DetailsMemberDTO
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Member</h4>
+<h1>Create Member</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="MemberId" class="control-label"></label>
-                <input asp-for="MemberId" class="form-control" />
-                <span asp-validation-for="MemberId" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="FullName" class="control-label"></label>
                 <input asp-for="FullName" class="form-control" />
@@ -28,23 +22,30 @@
                 <span asp-validation-for="IdentityCard" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ACity" class="control-label"></label>
-                <input asp-for="ACity" class="form-control" />
-                <span asp-validation-for="ACity" class="text-danger"></span>
+                <label class="control-label">Address</label>
+                <div class="address-group">                    
+                    <div class="col">
+                            <label asp-for="ACity" class="control-label"></label>
+                            <input asp-for="ACity" class="form-control" />
+                            <span asp-validation-for="ACity" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="AStreet" class="control-label"></label>
+                        <input asp-for="AStreet" class="form-control" />
+                        <span asp-validation-for="AStreet" class="text-danger"></span>
+                    </div>
+                   
+                    <div class="col">
+                        <label asp-for="ANumber" class="control-label"></label>
+                        <input asp-for="ANumber" class="form-control" />
+                        <span asp-validation-for="ANumber" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AStreet" class="control-label"></label>
-                <input asp-for="AStreet" class="form-control" />
-                <span asp-validation-for="AStreet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ANumber" class="control-label"></label>
-                <input asp-for="ANumber" class="form-control" />
-                <span asp-validation-for="ANumber" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="DateBirth" class="control-label"></label>
-                <input asp-for="DateBirth" class="form-control" />
+                <input asp-for="DateBirth" class="form-control" id="date-birth" />
                 <span asp-validation-for="DateBirth" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -53,7 +54,7 @@
                 <span asp-validation-for="Telephone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MobilePhone" class="control-label"></label>
+                <label asp-for="MobilePhone" class="control-label" ></label>
                 <input asp-for="MobilePhone" class="form-control" />
                 <span asp-validation-for="MobilePhone" class="text-danger"></span>
             </div>
@@ -65,9 +66,17 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to Members List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }<script>
+                                                                          // Get the current date in the format yyyy-mm-dd
+                                                                          const currentDate = new Date().toISOString().split('T')[0];
+
+                                                                          // Set the minimum date for the DateBirth input field
+                                                                          document.getElementById('date-birth').setAttribute('max', currentDate);
+    </script>
 }

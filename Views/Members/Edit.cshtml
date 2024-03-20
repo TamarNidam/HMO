@@ -1,12 +1,10 @@
-﻿@model HMO.Models.Member
+﻿@model HMO.DTO.DetailsMemberDTO
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Member</h4>
+<h1>Edit Member</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,19 +22,25 @@
                 <span asp-validation-for="IdentityCard" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ACity" class="control-label"></label>
-                <input asp-for="ACity" class="form-control" />
-                <span asp-validation-for="ACity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AStreet" class="control-label"></label>
-                <input asp-for="AStreet" class="form-control" />
-                <span asp-validation-for="AStreet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ANumber" class="control-label"></label>
-                <input asp-for="ANumber" class="form-control" />
-                <span asp-validation-for="ANumber" class="text-danger"></span>
+                <label class="control-label">Address</label>
+                <div class="address-group">
+                    <div>
+                        <label asp-for="ACity" class="control-label"></label>
+                        <input asp-for="ACity" class="form-control" />
+                        <span asp-validation-for="ACity" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="AStreet" class="control-label"></label>
+                        <input asp-for="AStreet" class="form-control" />
+                        <span asp-validation-for="AStreet" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="ANumber" class="control-label"></label>
+                        <input asp-for="ANumber" class="form-control" />
+                        <span asp-validation-for="ANumber" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="DateBirth" class="control-label"></label>
@@ -61,7 +65,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to Members List</a>
 </div>
 
 @section Scripts {

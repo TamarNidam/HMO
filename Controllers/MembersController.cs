@@ -47,9 +47,10 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-
-            return View(member);
+            
+            return View(CastingDTO(member));
         }
+
 
         // GET: Members/Create
         public IActionResult Create()
@@ -58,15 +59,16 @@ namespace HMO.Controllers
         }
 
         // POST: Members/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MemberId,FullName,IdentityCard,ACity,AStreet,ANumber,DateBirth,Telephone,MobilePhone")] Member member)
+        public async Task<IActionResult> Create([Bind("MemberId,FullName,IdentityCard,ACity,AStreet,ANumber,DateBirth,Telephone,MobilePhone")] DetailsMemberDTO member)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(member);
+                var maxId = await _context.Members.MaxAsync(u => (int?)u.MemberId) ?? 0;
+                member.MemberId = maxId + 1;
+                var memberDTO = Casting(member);
+                _context.Add(memberDTO);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -86,15 +88,14 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-            return View(member);
+            
+            return View(CastingDTO(member));
         }
 
         // POST: Members/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MemberId,FullName,IdentityCard,ACity,AStreet,ANumber,DateBirth,Telephone,MobilePhone")] Member member)
+        public async Task<IActionResult> Edit(int id, [Bind("MemberId,FullName,IdentityCard,ACity,AStreet,ANumber,DateBirth,Telephone,MobilePhone")] DetailsMemberDTO member)
         {
             if (id != member.MemberId)
             {
@@ -103,9 +104,10 @@ namespace HMO.Controllers
 
             if (ModelState.IsValid)
             {
+                var memberDTO = Casting(member);
                 try
                 {
-                    _context.Update(member);
+                    _context.Update(memberDTO);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -139,7 +141,7 @@ namespace HMO.Controllers
                 return NotFound();
             }
 
-            return View(member);
+            return View(CastingDTO(member));
         }
 
         // POST: Members/Delete/5
@@ -160,6 +162,42 @@ namespace HMO.Controllers
         private bool MemberExists(int id)
         {
             return _context.Members.Any(e => e.MemberId == id);
+        }
+
+        //casting from Member to MemberDTO
+        private DetailsMemberDTO? CastingDTO(Member member)
+        {
+            var m = new DetailsMemberDTO
+            {
+                MemberId = member.MemberId,
+                FullName = member.FullName,
+                IdentityCard = member.IdentityCard,
+                ACity = member.ACity,
+                AStreet = member.AStreet,
+                ANumber = member.ANumber,
+                DateBirth = member.DateBirth,
+                Telephone = member.Telephone,
+                MobilePhone = member.MobilePhone
+            };
+            return m;
+        }
+
+        //casting from MemberDTO to Member
+        private Member? Casting(DetailsMemberDTO member)
+        {
+            var m = new Member
+            {
+                MemberId = member.MemberId,
+                FullName = member.FullName,
+                IdentityCard = member.IdentityCard,
+                ACity = member.ACity,
+                AStreet = member.AStreet,
+                ANumber = member.ANumber,
+                DateBirth = member.DateBirth,
+                Telephone = member.Telephone,
+                MobilePhone = member.MobilePhone
+            };
+            return m;
         }
     }
 }

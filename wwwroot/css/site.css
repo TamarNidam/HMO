@@ -20,3 +20,13 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.address-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+    .address-group .col {
+        flex: 1; 
+        margin-right: 10px;
+    }
