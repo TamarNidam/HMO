@@ -26,7 +26,7 @@ namespace HMO.DTO
         [Required]
         public DateOnly DateBirth { get; set; }
 
-        [RegularExpression(@"^\d{7,}$", ErrorMessage = "Telephone number must be at least 7 digits")]
+        [RegularExpression(@"^\d{0,}|^\d{7,}$", ErrorMessage = "Telephone number must be at least 7 digits")]
         public string Telephone { get; set; }
 
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Mobile Phone must be 10 digits")]

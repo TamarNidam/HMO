@@ -47,7 +47,7 @@ namespace HMO.Controllers
         // GET: CoronaVirus/Create
         public IActionResult Create()
         {
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity");
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName");
             return View();
         }
 
@@ -64,7 +64,7 @@ namespace HMO.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVirus.MemberId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVirus.MemberId);
             return View(coronaVirus);
         }
 
@@ -81,7 +81,7 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVirus.MemberId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVirus.MemberId);
             return View(coronaVirus);
         }
 
@@ -117,7 +117,7 @@ namespace HMO.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVirus.MemberId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVirus.MemberId);
             return View(coronaVirus);
         }
 

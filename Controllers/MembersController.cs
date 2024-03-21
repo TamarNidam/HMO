@@ -27,8 +27,8 @@ namespace HMO.Controllers
                     {
                         MemberId = m.MemberId,
                         FullName = m.FullName,
-                        ACity = m.ACity
-                    }).ToListAsync();
+                    IdentityCard = m.IdentityCard
+                }).ToListAsync();
 
             return View(members);
         }

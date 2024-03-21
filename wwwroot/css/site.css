@@ -27,6 +27,10 @@ body {
 }
 
     .address-group .col {
-        flex: 1; 
+        flex: 1;
         margin-right: 10px;
     }
+
+.red-text {
+    color: red;
+}

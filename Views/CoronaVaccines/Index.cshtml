@@ -1,13 +1,13 @@
-﻿@model IEnumerable<HMO.Models.CoronaVaccine>
+﻿@model IEnumerable<HMO.DTO.VaccinationDTO>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+<h1>Covid-19 Vaccines</h1>
+<hr/>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Add Vaccination</a>
 </p>
 <table class="table">
     <thead>
@@ -19,7 +19,13 @@
                 @Html.DisplayNameFor(model => model.ManufacturerVaccine)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Member)
+                @Html.DisplayNameFor(model => model.MemberIdentityCard)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MemberName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VaccinationCount)
             </th>
             <th></th>
         </tr>
@@ -34,12 +40,19 @@
                 @Html.DisplayFor(modelItem => item.ManufacturerVaccine)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Member.ACity)
+                    @Html.DisplayFor(modelItem => item.MemberIdentityCard)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemberName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VaccinationCount)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.VaccineId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.VaccineId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.VaccineId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.VaccineId">Delete</a> |
+                <a asp-controller="Members" asp-action="Details" asp-route-id="@item.MemberId">Member details</a> 
+
             </td>
         </tr>
 }

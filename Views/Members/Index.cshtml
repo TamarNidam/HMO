@@ -17,7 +17,7 @@
                 Name
             </th>
             <th>
-                City
+                IdentityCard
             </th>
             <th></th>
         </tr>
@@ -29,7 +29,7 @@
                 @Html.DisplayFor(modelItem => item.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ACity)
+                    @Html.DisplayFor(modelItem => item.IdentityCard)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.MemberId">Edit</a> |

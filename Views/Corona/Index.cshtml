@@ -1,0 +1,61 @@
+﻿@model IEnumerable<HMO.DTO.IndexCoronaDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Covid-19</h1>
+<hr />
+<a asp-controller="CoronaVaccines" asp-action="Index">Vaccines</a> | 
+<a asp-controller="CoronaVirus" asp-action="Index">Virus</a> 
+@* <a asp-controller="CoronaVaccines" asp-action="Index">Vaccines</a> |
+ *@<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                IdentityCard
+            </th>
+            <th>
+                Vaccinations
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdentityCard)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumVaccines)
+                </td>
+                <td>
+                    @if (item.Status == "SICK")
+                    {
+                        <span class="red-text">@Html.DisplayFor(modelItem => item.Status)</span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Status)
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Members" asp-action="Details" asp-route-id="@item.MemberId">Member Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

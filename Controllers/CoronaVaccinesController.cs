@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HMO.Models;
+using HMO.DTO;
 
 namespace HMO.Controllers
 {
     public class CoronaVaccinesController : Controller
     {
         private readonly HMOContext _context;
+        private readonly int NUM_VACCINE =4;
 
         public CoronaVaccinesController(HMOContext context)
         {
@@ -21,50 +23,65 @@ namespace HMO.Controllers
         // GET: CoronaVaccines
         public async Task<IActionResult> Index()
         {
-            var hMOContext = _context.CoronaVaccines.Include(c => c.Member);
-            return View(await hMOContext.ToListAsync());
-        }
+           var vaccines = await _context.CoronaVaccines
+                .Select(m => new VaccinationDTO
+                
+                    
+                    {
+                        VaccineId = m.VaccineId,
+                        VaccinationCount = _context.CoronaVaccines.Count(v => v.MemberId == m.MemberId && v.DateVaccine <= m.DateVaccine),
+                        MemberId = (int)m.MemberId,
+                        MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
+                        MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
+                        DateVaccine = (DateOnly)m.DateVaccine,
+                        ManufacturerVaccine = m.ManufacturerVaccine
+                }).OrderByDescending(m => m.DateVaccine).ToListAsync();
 
-        // GET: CoronaVaccines/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var coronaVaccine = await _context.CoronaVaccines
-                .Include(c => c.Member)
-                .FirstOrDefaultAsync(m => m.VaccineId == id);
-            if (coronaVaccine == null)
-            {
-                return NotFound();
-            }
-
-            return View(coronaVaccine);
+            return View(vaccines);
         }
 
         // GET: CoronaVaccines/Create
         public IActionResult Create()
         {
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity");
+            ViewBag.texti = "good";
+            // ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "IdentityCard");
             return View();
         }
 
-        // POST: CoronaVaccines/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+            // POST: CoronaVaccines/Create
+            [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VaccineId,MemberId,DateVaccine,ManufacturerVaccine")] CoronaVaccine coronaVaccine)
+        public async Task<IActionResult> Create([Bind("VaccineId,MemberId,MemberIdentityCard,DateVaccine,ManufacturerVaccine")] VaccinationDTO coronaVaccine)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(coronaVaccine);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewBag.texti = "good";
+                int ? memberId = _context.Members
+    .Where(m => m.IdentityCard == coronaVaccine.MemberIdentityCard)
+    .Select(m => (int?)m.MemberId) // Cast MemberId to nullable int
+    .FirstOrDefault();
+
+                if (memberId == null)
+                {
+                    ViewBag.texti = "No member detected";
+                }
+                else if (_context.CoronaVaccines.Count(m=>m.MemberId == memberId) >= NUM_VACCINE)
+                {
+                    ViewBag.texti = "cant be more vaccine";
+                }
+                else
+                {
+                    coronaVaccine.MemberId = (int)memberId;
+                    var maxId = await _context.CoronaVaccines.MaxAsync(u => (int?)u.VaccineId) ?? 0;
+                    coronaVaccine.VaccineId = maxId + 1;
+                    var sql = $"INSERT INTO [CoronaVaccines] (VaccineId,MemberId,DateVaccine,ManufacturerVaccine) VALUES ({coronaVaccine.VaccineId}, '{coronaVaccine.MemberId}', '{coronaVaccine.DateVaccine}', '{coronaVaccine.ManufacturerVaccine}')";
+                    await _context.Database.ExecuteSqlRawAsync(sql);
+                    return RedirectToAction(nameof(Index));
+                }
+               
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVaccine.MemberId);
+            
+            //ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVaccine.MemberId);
             return View(coronaVaccine);
         }
 
@@ -81,7 +98,7 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVaccine.MemberId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVaccine.MemberId);
             return View(coronaVaccine);
         }
 
@@ -117,7 +134,7 @@ namespace HMO.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "ACity", coronaVaccine.MemberId);
+            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVaccine.MemberId);
             return View(coronaVaccine);
         }
 

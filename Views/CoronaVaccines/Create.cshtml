@@ -1,5 +1,8 @@
-﻿@model HMO.Models.CoronaVaccine
-
+﻿@model HMO.DTO.VaccinationDTO
+@if (ViewBag.texti != "good")
+{
+    <div class="alert alert-danger">@ViewBag.texti</div>
+}
 @{
     ViewData["Title"] = "Create";
 }
@@ -12,18 +15,15 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="VaccineId" class="control-label"></label>
-                <input asp-for="VaccineId" class="form-control" />
-                <span asp-validation-for="VaccineId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MemberId" class="control-label"></label>
-                <select asp-for="MemberId" class ="form-control" asp-items="ViewBag.MemberId"></select>
+                <label asp-for="MemberIdentityCard" class="control-label"></label>
+                <input asp-for="MemberIdentityCard" class="form-control" />
+                <span asp-validation-for="MemberIdentityCard" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DateVaccine" class="control-label"></label>
-                <input asp-for="DateVaccine" class="form-control" />
+                <input asp-for="DateVaccine" class="form-control" id="today" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="DateVaccine" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,7 +34,7 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
+            </form>        
     </div>
 </div>
 
@@ -44,4 +44,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Get the current date in the format yyyy-mm-dd
+        const currentDate = new Date().toISOString().split('T')[0];
+
+        // Set the minimum date for the DateBirth input field
+        document.getElementById('today').setAttribute('max', currentDate);
+    </script>
 }
+
