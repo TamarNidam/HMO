@@ -1,12 +1,12 @@
-﻿@model HMO.Models.CoronaVaccine
+﻿@model HMO.DTO.VaccinationDTO
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>CoronaVaccine</h4>
+<h1>Edit Vaccine</h1>
+<hr/>
+<h4>Corona</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,13 +14,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="VaccineId" />
             <div class="form-group">
-                <label asp-for="MemberId" class="control-label"></label>
-                <select asp-for="MemberId" class="form-control" asp-items="ViewBag.MemberId"></select>
-                <span asp-validation-for="MemberId" class="text-danger"></span>
+                <label asp-for="MemberIdentityCard" class="control-label"></label>
+                <input asp-for="MemberIdentityCard" class="form-control" />
+                <span asp-validation-for="MemberIdentityCard" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DateVaccine" class="control-label"></label>
-                <input asp-for="DateVaccine" class="form-control" />
+                <input asp-for="DateVaccine" class="form-control" id="today" type="date"/>
                 <span asp-validation-for="DateVaccine" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,4 +41,8 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>        
+        const currentDate = new Date().toISOString().split('T')[0];
+        document.getElementById('today').setAttribute('max', currentDate);
+    </script>
 }
