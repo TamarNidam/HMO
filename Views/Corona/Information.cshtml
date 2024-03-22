@@ -1,0 +1,51 @@
+﻿@model HMO.DTO.DetailsCoronaDTO
+
+@{
+    ViewData["Title"] = "Information";
+}
+
+<h1>General information and statistics</h1>
+<hr/>
+
+<head>
+    <title>COVID-19 Patients Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        const dailyCount = {};
+
+        for (let i = 1; i <= 30; i++) {
+            const date = new Date(2024, 2, i); // Year, Month (0-indexed), Day
+            const count = Math.floor(Math.random() * 10); // Random count for illustration
+            dailyCount[date.toDateString()] = count;
+        }
+
+        // Get the canvas element
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        // Create the Chart.js chart
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Object.keys(dailyCount),
+                datasets: [{
+                    label: 'COVID-19 Patients',
+                    data: Object.values(dailyCount),
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>

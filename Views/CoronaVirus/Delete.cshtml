@@ -1,4 +1,4 @@
-﻿@model HMO.Models.CoronaVirus
+﻿@model HMO.DTO.VirusDTO
 
 @{
     ViewData["Title"] = "Delete";
@@ -24,10 +24,16 @@
             @Html.DisplayFor(model => model.DateRecovery)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Member)
+            @Html.DisplayNameFor(model => model.MemberName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Member.ACity)
+            @Html.DisplayFor(model => model.MemberName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MemberIdentityCard)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MemberIdentityCard)
         </dd>
     </dl>
     

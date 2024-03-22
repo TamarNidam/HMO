@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HMO.Models;
+using HMO.DTO;
 
 namespace HMO.Controllers
 {
@@ -21,52 +22,52 @@ namespace HMO.Controllers
         // GET: CoronaVirus
         public async Task<IActionResult> Index()
         {
-            var hMOContext = _context.CoronaViruses.Include(c => c.Member);
-            return View(await hMOContext.ToListAsync());
+            var virus = await _context.CoronaViruses
+               .Select(m => new VirusDTO
+               {
+                   VirusId = m.VirusId,
+                   MemberId = m.MemberId,
+                   MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
+                   MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
+                   DatePositiveResult =m.DatePositiveResult,
+                   DateRecovery = m.DateRecovery
+               }).OrderByDescending(m => m.DateRecovery).ToListAsync();
+
+            return View(virus);
         }
 
-        // GET: CoronaVirus/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var coronaVirus = await _context.CoronaViruses
-                .Include(c => c.Member)
-                .FirstOrDefaultAsync(m => m.VirusId == id);
-            if (coronaVirus == null)
-            {
-                return NotFound();
-            }
-
-            return View(coronaVirus);
-        }
 
         // GET: CoronaVirus/Create
         public IActionResult Create()
         {
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName");
+            var membersNotInSick = _context.Members
+        .Where(m => !_context.CoronaViruses.Any(s => s.MemberId == m.MemberId))
+        .Select(m => new { m.MemberId, m.IdentityCard })
+        .ToList();
+
+            ViewData["MemberId"] = new SelectList(membersNotInSick, "MemberId", "IdentityCard");
+
             return View();
         }
 
         // POST: CoronaVirus/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VirusId,MemberId,DatePositiveResult,DateRecovery")] CoronaVirus coronaVirus)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(coronaVirus);
+        public async Task<IActionResult> Create([Bind("VirusId,MemberId,DatePositiveResult,DateRecovery")] VirusDTO coronaVirus)
+        {           
+                var maxId = await _context.CoronaViruses.MaxAsync(u => (int?)u.VirusId) ?? 0;
+                coronaVirus.VirusId = maxId + 1;
+                var CV = new CoronaVirus
+                {
+                    VirusId = coronaVirus.VirusId,
+                    MemberId = coronaVirus.MemberId,
+                    DatePositiveResult = coronaVirus.DatePositiveResult,
+                    DateRecovery = coronaVirus.DateRecovery
+                };
+                _context.Add(CV);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "FullName", coronaVirus.MemberId);
-            return View(coronaVirus);
-        }
+       }
 
         // GET: CoronaVirus/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -86,8 +87,6 @@ namespace HMO.Controllers
         }
 
         // POST: CoronaVirus/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("VirusId,MemberId,DatePositiveResult,DateRecovery")] CoronaVirus coronaVirus)
@@ -129,15 +128,23 @@ namespace HMO.Controllers
                 return NotFound();
             }
 
-            var coronaVirus = await _context.CoronaViruses
-                .Include(c => c.Member)
+            var m = await _context.CoronaViruses
                 .FirstOrDefaultAsync(m => m.VirusId == id);
-            if (coronaVirus == null)
+            if (m == null)
             {
                 return NotFound();
             }
+            var me = new VirusDTO
+            {
+                VirusId = m.VirusId,
+                MemberId = m.MemberId,
+                MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
+                MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
+                DatePositiveResult = m.DatePositiveResult,
+                DateRecovery = m.DateRecovery
+            };
 
-            return View(coronaVirus);
+            return View(me);
         }
 
         // POST: CoronaVirus/Delete/5

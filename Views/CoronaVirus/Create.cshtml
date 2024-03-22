@@ -1,10 +1,10 @@
-﻿@model HMO.Models.CoronaVirus
+﻿@model HMO.DTO.VirusDTO
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>New Sick</h1>
 
 <h4>CoronaVirus</h4>
 <hr />
@@ -13,22 +13,17 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="VirusId" class="control-label"></label>
-                <input asp-for="VirusId" class="form-control" />
-                <span asp-validation-for="VirusId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="MemberId" class="control-label"></label>
                 <select asp-for="MemberId" class ="form-control" asp-items="ViewBag.MemberId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="DatePositiveResult" class="control-label"></label>
-                <input asp-for="DatePositiveResult" class="form-control" />
+                <input asp-for="DatePositiveResult" class="form-control" id="today" type="date" />
                 <span asp-validation-for="DatePositiveResult" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DateRecovery" class="control-label"></label>
-                <input asp-for="DateRecovery" class="form-control" />
+                <input asp-for="DateRecovery" class="form-control" id="day" type="date" />
                 <span asp-validation-for="DateRecovery" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -42,6 +37,46 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('today').value = today;
+        document.getElementById('today').max = today;
+
+        const maxRecoveryDate = new Date();
+        maxRecoveryDate.setDate(maxRecoveryDate.getDate() + 5);
+        const maxRecoveryDateString = maxRecoveryDate.toISOString().split('T')[0];
+        document.getElementById('day').max = maxRecoveryDateString;
+
+        document.getElementById('today').addEventListener('change', function () {
+            var positiveDate = new Date(this.value);
+            var recoveryDate = new Date(positiveDate);
+            recoveryDate.setDate(positiveDate.getDate() + 5);
+
+            var todayDate = new Date();
+
+            if (recoveryDate > todayDate) {
+                document.getElementById('day').value = recoveryDate.toISOString().split('T')[0];
+                document.getElementById('day').min = this.value; 
+            } else {
+                document.getElementById('day').value = '';
+                alert('Recovery date should be within 5 days after the positive test date.');
+            }
+        });
+
+        document.getElementById('day').addEventListener('change', function () {
+            var recoveryDate = new Date(this.value);
+            var positiveDate = new Date(document.getElementById('today').value);
+
+            if (recoveryDate < positiveDate) {
+                this.value = positiveDate.toISOString().split('T')[0]; 
+                alert('Recovery date cannot be earlier than the positive test date.');
+            }
+        });
+    </script>
 }
+

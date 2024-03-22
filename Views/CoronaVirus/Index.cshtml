@@ -1,87 +1,52 @@
-﻿@model IEnumerable<HMO.Models.CoronaVirus>
+﻿@model IEnumerable<HMO.DTO.VirusDTO>
 
 @{
     ViewData["Title"] = "Index";
 }
-<head>
-    <title>COVID-19 Patients Graph</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <canvas id="myChart"></canvas>
 
-    <script>
-        const dailyCount = {};
-
-        for (let i = 1; i <= 30; i++) {
-            const date = new Date(2024, 2, i); // Year, Month (0-indexed), Day
-            const count = Math.floor(Math.random() * 10); // Random count for illustration
-            dailyCount[date.toDateString()] = count;
-        }
-
-        // Get the canvas element
-        const ctx = document.getElementById('myChart').getContext('2d');
-
-        // Create the Chart.js chart
-        const myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Object.keys(dailyCount),
-                datasets: [{
-                    label: 'COVID-19 Patients',
-                    data: Object.values(dailyCount),
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
-</body>
-<h1>Index</h1>
-
+<h1>Covid-19 Sicks</h1>
+<hr/>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">New Sick</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MemberIdentityCard)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MemberName)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.DatePositiveResult)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateRecovery)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Member)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemberIdentityCard)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemberName)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DatePositiveResult)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateRecovery)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Member.ACity)
-            </td>
+            
             <td>
                 <a asp-action="Edit" asp-route-id="@item.VirusId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.VirusId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.VirusId">Delete</a>
-            </td>
+                <a asp-action="Delete" asp-route-id="@item.VirusId">Delete</a> |
+                <a asp-controller="Members" asp-action="Details" asp-route-id="@item.MemberId">Member details</a>
         </tr>
 }
     </tbody>
