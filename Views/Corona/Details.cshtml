@@ -1,1 +1,85 @@
-﻿
+﻿@model HMO.DTO.DetailsCoronaDTO
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details COCID-19</h1>
+<hr />
+<h2>@Model.Details.FullName</h2>
+<div>
+    <div>
+    <h6>ID: @Model.Details.IdentityCard</h6> 
+    <h8><a asp-controller="Members" asp-action="Details" asp-route-id="@Model.Details.MemberId">Full Details</a></h8>
+    </div> 
+    <br />
+    <br />
+   <h5>@Model.Details.Status</h5>
+    @if (@Model.Details.Status != "NEVER BEEN SICK")
+    {
+        <p>Positive Result: @Model.Virus.DatePositiveResult</p>
+        <p>Recovery: @Model.Virus.DateRecovery</p>
+        <a asp-controller="CoronaVirus" asp-action="Edit" asp-route-id="@Model.Virus.VirusId">Edit</a>
+    }
+    else
+    {
+        <a asp-controller="CoronaVirus" asp-action="Create">Set as sick/recovery</a>
+    }
+    <br/>
+    <br />
+   <h4>Vaccines:</h4>
+   @if(Model.Details.NumVaccines == 0)
+    {
+        <h5>not vaccinated</h5>
+    }
+    else
+    {
+  
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Num
+                </th>
+                <th>
+                    DateVaccine
+                </th>
+                <th>
+                   ManufacturerVaccine
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Vaccines)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VaccinationCount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateVaccine)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ManufacturerVaccine)
+                    </td>
+                    <td>
+                        <a asp-controller="CoronaVaccines" asp-action="Edit" asp-route-id="@item.VaccineId">Edit</a>
+                        <a asp-controller="CoronaVaccines" asp-action="Delete" asp-route-id="@item.VaccineId">Delete</a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+        </table>
+    }
+    @if(Model.Details.NumVaccines<4)
+    {
+          <a asp-controller="CoronaVaccines" asp-action="Create" asp-route-id="@Model.Details.IdentityCard">add vaccine</a>
+    }
+</div>
+<br />
+<br />
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

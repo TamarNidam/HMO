@@ -48,6 +48,10 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.MemberId">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.MemberId">Edit</a> 
+    <br />
+    <a asp-controller="Corona" asp-action="Details" asp-route-id="@Model?.MemberId">covid-19</a>
+
+    <br />
     <a asp-action="Index">Back to Members List</a>
 </div>

@@ -23,26 +23,37 @@ namespace HMO.Controllers
         // GET: CoronaVaccines
         public async Task<IActionResult> Index()
         {
+           
+            return View(getVaccines());
+        }
+
+        public async  Task<List<VaccinationDTO>> getVaccines()
+        {
            var vaccines = await _context.CoronaVaccines
                 .Select(m => new VaccinationDTO
                 {
-                        VaccineId = m.VaccineId,
-                        VaccinationCount = _context.CoronaVaccines.Count(v => v.MemberId == m.MemberId && v.DateVaccine <= m.DateVaccine),
-                        MemberId = (int)m.MemberId,
-                        MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
-                        MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
-                        DateVaccine = (DateOnly)m.DateVaccine,
-                        ManufacturerVaccine = m.ManufacturerVaccine
+                    VaccineId = m.VaccineId,
+                    VaccinationCount = _context.CoronaVaccines.Count(v => v.MemberId == m.MemberId && v.DateVaccine <= m.DateVaccine),
+                    MemberId = (int)m.MemberId,
+                    MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
+                    MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
+                    DateVaccine = (DateOnly)m.DateVaccine,
+                    ManufacturerVaccine = m.ManufacturerVaccine
                 }).OrderByDescending(m => m.DateVaccine).ToListAsync();
-
-            return View(vaccines);
+            
+            return vaccines;
         }
 
+
+
         // GET: CoronaVaccines/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
             ViewBag.texti = "good";
-            // ViewData["MemberId"] = new SelectList(_context.Members, "MemberId", "IdentityCard");
+            if (id.HasValue)
+            {
+                ViewData["MemberId"] = id.Value;
+            }
             return View();
         }
 

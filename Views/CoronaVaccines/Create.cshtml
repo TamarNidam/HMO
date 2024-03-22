@@ -8,9 +8,9 @@
 }
 
 <h1>Create</h1>
-
-<h4>CoronaVaccine</h4>
 <hr />
+<h4>CoronaVaccine</h4>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -18,7 +18,14 @@
 
             <div class="form-group">
                 <label asp-for="MemberIdentityCard" class="control-label"></label>
-                <input asp-for="MemberIdentityCard" class="form-control" />
+                @if (ViewData["MemberId"] != null)
+                {
+                    <input asp-for="MemberIdentityCard" class="form-control" readonly value="@ViewData["MemberId"]" />
+                }
+                else
+                {
+                    <input asp-for="MemberIdentityCard" class="form-control" />
+                }
                 <span asp-validation-for="MemberIdentityCard" class="text-danger"></span>
             </div>
             <div class="form-group">
