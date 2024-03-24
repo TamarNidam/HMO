@@ -90,41 +90,24 @@ namespace HMO.Controllers
             return View(detailsCorona);
         }
 
-        //    private DetailsCoronaDTO? CastingDTO(Member m)
-        //    {
-        //        var today = DateOnly.FromDateTime(DateTime.Now);
-        //        DetailsCoronaDTO detailsCorona = new DetailsCoronaDTO
-        //        {
-        //            Details = new IndexCoronaDTO
-        //            {
-        //                MemberId = m.MemberId,
-        //                FullName = m.FullName,
-        //                IdentityCard = m.IdentityCard,
-        //                NumVaccines = _context.CoronaVaccines.Count(v => v.MemberId == m.MemberId),
-        //                Status = _context.CoronaViruses.Any(v => v.MemberId == m.MemberId) ?
-        //        (_context.CoronaViruses.Any(v => v.MemberId == m.MemberId && v.DateRecovery > today) ? "SICK" : "RECOVERING") :
-        //        "NEVER BEEN SICK"
-        //            },
-        //            Vaccines = getVaccines(m.MemberId);
-        //        };
+        // GET: Corona/Information
+        public IActionResult Information()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var numMembers = _context.Members.Count();
+            var sicks = _context.CoronaViruses.Count(m=>m.DateRecovery<today);
+            var recovers = _context.CoronaViruses.Count(m => m.DateRecovery >= today);
+            var vaccines = _context.CoronaVaccines.Count();
 
-        //        return detailsCorona;
-        //    }
-        //public async Task<List<VaccinationDTO>> getVaccines(int id)
-        //{
-        //    var vaccines = await _context.CoronaVaccines.Where(c => c.MemberId == id)
-        //            .Select(m => new VaccinationDTO
-        //            {
-        //                VaccineId = m.VaccineId,
-        //                VaccinationCount = _context.CoronaVaccines.Count(v => v.MemberId == m.MemberId && v.DateVaccine <= m.DateVaccine),
-        //                MemberId = id,
-        //                MemberName = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.FullName).FirstOrDefault(),
-        //                MemberIdentityCard = _context.Members.Where(v => v.MemberId == m.MemberId).Select(v => v.IdentityCard).FirstOrDefault(),
-        //                DateVaccine = (DateOnly)m.DateVaccine,
-        //                ManufacturerVaccine = m.ManufacturerVaccine
-        //            }).OrderByDescending(m => m.DateVaccine).ToListAsync();
-        //    return vaccines;
-        //}
+            ViewBag.Members = numMembers;
+            ViewBag.IsSick = sicks;
+            ViewBag.Recovers = recovers;
+            ViewBag.NeverWasSick = (numMembers-sicks-recovers);
+            ViewBag.Vaccines = vaccines;
 
+
+            return View();
+        }
+        
     }
 }

@@ -12,6 +12,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    ViewBag.Members = numMembers;
+
+    <h3>Members presently dealing with COVID-19 : @ViewBag.IsSick </h3>
+    <h4>Recovery: @ViewBag.Recovers  never been sick: @ViewBag.NeverWasSick</h4>
+    <h3>Vaccinations performed: @ViewBag.Vaccines</h3>
+
     <canvas id="myChart"></canvas>
 
     <script>
