@@ -24,9 +24,9 @@ namespace HMO.Controllers
         {
             var members = await _context.Members
                 .Select(m => new IndexMemberDTO
-                    {
-                        MemberId = m.MemberId,
-                        FullName = m.FullName,
+                {
+                    MemberId = m.MemberId,
+                    FullName = m.FullName,
                     IdentityCard = m.IdentityCard
                 }).ToListAsync();
 
@@ -47,7 +47,7 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-            
+
             return View(CastingDTO(member));
         }
 
@@ -65,12 +65,20 @@ namespace HMO.Controllers
         {
             if (ModelState.IsValid)
             {
-                var maxId = await _context.Members.MaxAsync(u => (int?)u.MemberId) ?? 0;
-                member.MemberId = maxId + 1;
-                var memberDTO = Casting(member);
-                _context.Add(memberDTO);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (UniqueId(member.IdentityCard))
+                {
+                    if (CorrectIsraeliId(member.IdentityCard))
+                    {
+                        var maxId = await _context.Members.MaxAsync(u => (int?)u.MemberId) ?? 0;
+                        member.MemberId = maxId + 1;
+                        var memberDTO = Casting(member);
+                        _context.Add(memberDTO);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    ModelState.AddModelError("IdentityCard", "Invalid identity number");
+                }
+                ModelState.AddModelError("IdentityCard", "Member exist");
             }
             return View(member);
         }
@@ -88,7 +96,7 @@ namespace HMO.Controllers
             {
                 return NotFound();
             }
-            
+
             return View(CastingDTO(member));
         }
 
@@ -104,24 +112,32 @@ namespace HMO.Controllers
 
             if (ModelState.IsValid)
             {
-                var memberDTO = Casting(member);
-                try
+                if (UniqueId(member.IdentityCard))
                 {
-                    _context.Update(memberDTO);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MemberExists(member.MemberId))
+                    if (CorrectIsraeliId(member.IdentityCard))
                     {
-                        return NotFound();
+                        var memberDTO = Casting(member);
+                        try
+                        {
+                            _context.Update(memberDTO);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!MemberExists(member.MemberId))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return RedirectToAction(nameof(Index));
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError("IdentityCard", "Invalid identity number");
                 }
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("IdentityCard", "Member exist");
             }
             return View(member);
         }
@@ -198,6 +214,37 @@ namespace HMO.Controllers
                 MobilePhone = member.MobilePhone
             };
             return m;
+        }
+
+        //ID integrity check - Israel
+        public static bool CorrectIsraeliId(string id)
+        {
+            int sum = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                int digit = int.Parse(id[i].ToString());
+                if (i % 2 == 0)
+                {
+                    digit *= 1;
+                }
+                else
+                {
+                    digit *= 2;
+                    if (digit > 9)
+                    {
+                        digit = digit / 10 + digit % 10;
+                    }
+                }
+                sum += digit;
+            }
+
+            return sum % 10 == 0;
+        }
+
+        //ID duplicate check
+        private bool UniqueId(string id)
+        {
+            return !_context.Members.Any(e => e.IdentityCard == id);
         }
     }
 }
